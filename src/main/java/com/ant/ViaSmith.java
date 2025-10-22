@@ -36,8 +36,8 @@ public class ViaSmith implements ModInitializer {
 
 			var pos = hitResult.getBlockPos();
 			var block = world.getBlockState(pos).getBlock();
-			boolean justgenerated = false;
-			
+			boolean[] justgenerated = { false };
+
 			// TODO: Add viaversion check thing
 			if (block == Blocks.SMITHING_TABLE) {
 				SimpleInventory tempInv = new SimpleInventory(9);
@@ -59,18 +59,26 @@ public class ViaSmith implements ModInitializer {
 					public void onTick() {
 						ServerWorld serverworld = player.getWorld();
 						ItemStack stack = tempInv.getStack(3);
-						if (justgenerated == true && stack.isEmpty()) {
+						if (justgenerated[0] == true && stack.isEmpty()) {
 							tempInv.removeStack(0, 1);
 							tempInv.removeStack(1, 1);
 							tempInv.removeStack(2, 1);
 						}
-						justgenerated = SmithingUtil.trySmithing(serverworld, tempInv);
+						justgenerated[0] = SmithingUtil.trySmithing(serverworld, tempInv);
 						super.onTick();
 					}
 
-
-
-
+					public boolean canTakeItems() {
+						ItemStack stack = tempInv.getStack(3);
+						if (justgenerated[0] == true && stack.isEmpty()) {
+							tempInv.removeStack(0, 1);
+							tempInv.removeStack(1, 1);
+							tempInv.removeStack(2, 1);
+						} else {
+							return true;
+						}
+						return false;
+					}
 				};
 				gui.setSlot(19, GuiElementBuilder.from(new ItemStack(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE))
 					.setName(Text.literal("Smithing Template"))
@@ -96,19 +104,7 @@ public class ViaSmith implements ModInitializer {
 				}
 				gui.setSlotRedirect(10, new Slot(tempInv, 0, 0, 0));
 				gui.setSlotRedirect(12, new Slot(tempInv, 1, 0, 0));
-				gui.setSlotRedirect(14, new Slot(tempInv, 2, 0, 0) {
-					public boolean canTakeItems() {
-						ItemStack stack = tempInv.getStack(3);
-						if (justgenerated == true && stack.isEmpty()) {
-							tempInv.removeStack(0, 1);
-							tempInv.removeStack(1, 1);
-							tempInv.removeStack(2, 1);
-						} else {
-							return true;
-						}
-						return false;
-					}
-				});
+				gui.setSlotRedirect(14, new Slot(tempInv, 2, 0, 0));
 				gui.setSlotRedirect(16, new Slot(tempInv, 3, 0, 0) {
 					@Override
 					public boolean canInsert(ItemStack stack) {
