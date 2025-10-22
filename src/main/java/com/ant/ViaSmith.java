@@ -33,7 +33,11 @@ public class ViaSmith implements ModInitializer {
 		UseBlockCallback.EVENT.register((entityplayer, world, hand, hitResult) -> {
 			ServerPlayerEntity player = (ServerPlayerEntity) entityplayer;
 			if (world.isClient()) return ActionResult.PASS;
+
+			var pos = hitResult.getBlockPos();
+			var block = world.getBlockState(pos).getBlock();
 			boolean justgenerated = false;
+			
 			// TODO: Add viaversion check thing
 			if (block == Blocks.SMITHING_TABLE) {
 				SimpleInventory tempInv = new SimpleInventory(9);
@@ -93,12 +97,14 @@ public class ViaSmith implements ModInitializer {
 				gui.setSlotRedirect(10, new Slot(tempInv, 0, 0, 0));
 				gui.setSlotRedirect(12, new Slot(tempInv, 1, 0, 0));
 				gui.setSlotRedirect(14, new Slot(tempInv, 2, 0, 0) {
-					@Override
-					public boolean canTakeItems(PlayerEntity playerEntity) {
+					public boolean canTakeItems() {
+						ItemStack stack = tempInv.getStack(3);
 						if (justgenerated == true && stack.isEmpty()) {
 							tempInv.removeStack(0, 1);
 							tempInv.removeStack(1, 1);
 							tempInv.removeStack(2, 1);
+						} else {
+							return true;
 						}
 						return false;
 					}
