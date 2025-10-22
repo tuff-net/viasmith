@@ -1,4 +1,4 @@
 # Fabric Viaversion Smithing Table
 
 
-I haven't even started development, don't use this
+This is a WIP, it's a bit unpolished and I think it wouldn't be too hard to find a dupe glitch, i'll try to patch out all the potential bugs soon

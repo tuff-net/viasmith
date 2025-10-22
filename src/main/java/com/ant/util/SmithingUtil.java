@@ -5,11 +5,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.ServerRecipeManager;
 import net.minecraft.recipe.SmithingRecipe;
-import net.minecraft.recipe.input.SmithingRecipeInput; // <-- correct package!
+import net.minecraft.recipe.input.SmithingRecipeInput;
 import net.minecraft.server.world.ServerWorld;
 
 public class SmithingUtil {
-    public static ItemStack trySmithing(ServerWorld world, SimpleInventory inv) {
+
+    public static boolean trySmithing(ServerWorld world, SimpleInventory inv) {
         SmithingRecipeInput input = new SmithingRecipeInput(
                 inv.getStack(0),
                 inv.getStack(1),
@@ -21,10 +22,13 @@ public class SmithingUtil {
         for (RecipeEntry<?> entry : srm.values()) {
             if (entry.value() instanceof SmithingRecipe recipe) {
                 if (recipe.matches(input, world)) {
-                    return recipe.craft(input, world.getRegistryManager());
+                    ItemStack result = recipe.craft(input, world.getRegistryManager());
+                    inv.setStack(3, result);
+                    return true;
                 }
             }
         }
-        return ItemStack.EMPTY;
+        inv.setStack(3, ItemStack.EMPTY);
+        return false;
     }
 }
