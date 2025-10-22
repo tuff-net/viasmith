@@ -26,16 +26,14 @@ import com.ant.util.SmithingUtil;
 public class ViaSmith implements ModInitializer {
 	public static final String MOD_ID = "viasmith";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-	public static boolean justgenerated = false;
+	
 	@Override
 	public void onInitialize() {
 		LOGGER.info("ViaSmith initialized!");
 		UseBlockCallback.EVENT.register((entityplayer, world, hand, hitResult) -> {
 			ServerPlayerEntity player = (ServerPlayerEntity) entityplayer;
 			if (world.isClient()) return ActionResult.PASS;
-
-			var pos = hitResult.getBlockPos();
-			var block = world.getBlockState(pos).getBlock();
+			boolean justgenerated = false;
 			// TODO: Add viaversion check thing
 			if (block == Blocks.SMITHING_TABLE) {
 				SimpleInventory tempInv = new SimpleInventory(9);
@@ -66,6 +64,9 @@ public class ViaSmith implements ModInitializer {
 						super.onTick();
 					}
 
+
+
+
 				};
 				gui.setSlot(19, GuiElementBuilder.from(new ItemStack(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE))
 					.setName(Text.literal("Smithing Template"))
@@ -91,7 +92,17 @@ public class ViaSmith implements ModInitializer {
 				}
 				gui.setSlotRedirect(10, new Slot(tempInv, 0, 0, 0));
 				gui.setSlotRedirect(12, new Slot(tempInv, 1, 0, 0));
-				gui.setSlotRedirect(14, new Slot(tempInv, 2, 0, 0));
+				gui.setSlotRedirect(14, new Slot(tempInv, 2, 0, 0) {
+					@Override
+					public boolean canTakeItems(PlayerEntity playerEntity) {
+						if (justgenerated == true && stack.isEmpty()) {
+							tempInv.removeStack(0, 1);
+							tempInv.removeStack(1, 1);
+							tempInv.removeStack(2, 1);
+						}
+						return false;
+					}
+				});
 				gui.setSlotRedirect(16, new Slot(tempInv, 3, 0, 0) {
 					@Override
 					public boolean canInsert(ItemStack stack) {

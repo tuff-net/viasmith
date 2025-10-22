@@ -18,7 +18,6 @@ public class SmithingUtil {
         );
 
         ServerRecipeManager srm = (ServerRecipeManager) world.getRecipeManager();
-
         for (RecipeEntry<?> entry : srm.values()) {
             if (entry.value() instanceof SmithingRecipe recipe) {
                 if (recipe.matches(input, world)) {
