@@ -57,7 +57,7 @@ public class ViaSmith implements ModInitializer {
 
 					@Override 
 					public void onTick() {
-						ServerWorld serverworld = player.getWorld();
+						ServerWorld serverworld = (ServerWorld) world;
 						ItemStack stack = tempInv.getStack(3);
 						if (justgenerated[0] == true && stack.isEmpty()) {
 							tempInv.removeStack(0, 1);
